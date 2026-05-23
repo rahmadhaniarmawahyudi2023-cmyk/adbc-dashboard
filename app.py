@@ -25,48 +25,153 @@ st.set_page_config(
 st.markdown("""
 <style>
 
+/* =========================================================
+BACKGROUND ANIMATION
+========================================================= */
+
 .stApp {
-    background-color: #0b1120;
+    background: linear-gradient(
+        -45deg,
+        #020617,
+        #0f172a,
+        #111827,
+        #1e1b4b
+    );
+    background-size: 400% 400%;
+    animation: gradientBG 18s ease infinite;
+    overflow-x: hidden;
 }
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Floating blur circles */
+
+.stApp::before {
+    content: "";
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    background: rgba(99,102,241,0.18);
+    filter: blur(120px);
+    border-radius: 50%;
+    top: -150px;
+    left: -120px;
+    animation: float1 12s ease-in-out infinite;
+    z-index: -1;
+}
+
+.stApp::after {
+    content: "";
+    position: fixed;
+    width: 450px;
+    height: 450px;
+    background: rgba(56,189,248,0.15);
+    filter: blur(120px);
+    border-radius: 50%;
+    bottom: -120px;
+    right: -100px;
+    animation: float2 15s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes float1 {
+    0% {
+        transform: translateY(0px) translateX(0px);
+    }
+    50% {
+        transform: translateY(40px) translateX(50px);
+    }
+    100% {
+        transform: translateY(0px) translateX(0px);
+    }
+}
+
+@keyframes float2 {
+    0% {
+        transform: translateY(0px) translateX(0px);
+    }
+    50% {
+        transform: translateY(-50px) translateX(-30px);
+    }
+    100% {
+        transform: translateY(0px) translateX(0px);
+    }
+}
+
+/* =========================================================
+SIDEBAR
+========================================================= */
 
 section[data-testid="stSidebar"] {
-    background-color: #0f172a;
-    border-right: 1px solid rgba(255,255,255,0.06);
+    background: rgba(15,23,42,0.75);
+    backdrop-filter: blur(18px);
+    border-right: 1px solid rgba(255,255,255,0.08);
 }
+
+/* =========================================================
+TEXT
+========================================================= */
 
 h1, h2, h3, h4 {
-    color: #e2e8f0;
+    color: #f8fafc;
+    font-weight: 600;
 }
 
-p, label {
-    color: #94a3b8;
+p, label, span {
+    color: #cbd5e1;
 }
 
-.block-container {
-    padding-top: 1.5rem;
-}
+/* =========================================================
+HERO SECTION
+========================================================= */
 
 .hero {
-    background: linear-gradient(135deg, #1e293b, #312e81);
-    padding: 28px;
-    border-radius: 16px;
-    margin-bottom: 24px;
+    background: rgba(15,23,42,0.55);
+    backdrop-filter: blur(18px);
+    padding: 32px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 28px;
+    box-shadow: 0 0 30px rgba(99,102,241,0.18);
 }
 
 .hero h1 {
     color: white;
     margin-bottom: 10px;
+    font-size: 2rem;
 }
 
 .hero p {
     color: #cbd5e1;
+    font-size: 15px;
 }
 
+/* =========================================================
+METRIC CARD
+========================================================= */
+
 [data-testid="metric-container"] {
-    background: #111827;
-    border-radius: 12px;
-    padding: 18px;
-    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(17,24,39,0.60);
+    backdrop-filter: blur(14px);
+    border-radius: 18px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: 0.3s ease;
+}
+
+[data-testid="metric-container"]:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(99,102,241,0.25);
 }
 
 [data-testid="metric-container"] label {
@@ -77,17 +182,85 @@ p, label {
     color: white;
 }
 
+/* =========================================================
+INFO BOX
+========================================================= */
+
 .info-box {
-    background: #111827;
-    padding: 16px;
-    border-radius: 12px;
+    background: rgba(17,24,39,0.60);
+    backdrop-filter: blur(14px);
+    padding: 18px;
+    border-radius: 18px;
     border-left: 4px solid #6366f1;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
 }
 
 .info-box p {
-    color: #cbd5e1;
+    color: #e2e8f0;
     margin: 0;
+}
+
+/* =========================================================
+TABLES
+========================================================= */
+
+[data-testid="stDataFrame"] {
+    background: rgba(17,24,39,0.55);
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+/* =========================================================
+BUTTON
+========================================================= */
+
+.stButton > button {
+    background: linear-gradient(
+        135deg,
+        #6366f1,
+        #8b5cf6
+    );
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 22px;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.stButton > button:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 18px rgba(99,102,241,0.4);
+}
+
+/* =========================================================
+INPUTS
+========================================================= */
+
+.stTextInput input,
+.stTextArea textarea,
+[data-baseweb="select"] {
+    background-color: rgba(17,24,39,0.70) !important;
+    color: white !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* =========================================================
+SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #6366f1;
+    border-radius: 20px;
 }
 
 </style>
