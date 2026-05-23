@@ -408,29 +408,77 @@ if menu == "Overview":
 
     with col2:
 
-        st.subheader("Distribusi Status")
+    st.subheader("Distribusi Status")
 
-        status_counts = (
-            df['status']
-            .value_counts()
-            .reset_index()
-        )
+    status_counts = (
+        df['status']
+        .value_counts()
+        .reset_index()
+    )
 
-        status_counts.columns = ['Status', 'Jumlah']
+    status_counts.columns = ['Status', 'Jumlah']
 
-        fig2 = px.pie(
-            status_counts,
-            names='Status',
-            values='Jumlah',
-            hole=0.5
-        )
+    fig2 = go.Figure(
+        data=[
+            go.Pie(
+                labels=status_counts['Status'],
+                values=status_counts['Jumlah'],
+                hole=0.65,
+                marker=dict(
+                    colors=[
+                        "#6366f1",
+                        "#38bdf8",
+                        "#4ade80",
+                        "#facc15",
+                        "#f87171"
+                    ],
+                    line=dict(color="#0b1120", width=3)
+                ),
+                textinfo='percent',
+                textfont=dict(size=14, color='white'),
+                pull=[0.03]*len(status_counts),
+            )
+        ]
+    )
 
-        fig2.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            font_color='white'
-        )
+    fig2.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font_color='white',
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            y=-0.1
+        ),
+        margin=dict(t=20, b=20, l=20, r=20)
+    )
 
-        st.plotly_chart(fig2, use_container_width=True)
+    st.markdown("""
+    <style>
+    .glow-chart {
+        animation: rotateGlow 12s linear infinite;
+        border-radius: 50%;
+        padding: 12px;
+        box-shadow:
+            0 0 20px rgba(99,102,241,0.4),
+            0 0 40px rgba(56,189,248,0.25),
+            0 0 60px rgba(99,102,241,0.15);
+    }
+
+    @keyframes rotateGlow {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<div class="glow-chart">', unsafe_allow_html=True)
+    st.plotly_chart(fig2, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # =========================================================
 # EDA
