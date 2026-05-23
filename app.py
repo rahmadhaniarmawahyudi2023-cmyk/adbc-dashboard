@@ -131,8 +131,13 @@ df = df.drop_duplicates()
 # =========================================================
 with st.sidebar:
 
-    st.markdown("## Dashboard ADBC")
-    st.caption("San Francisco 311 Service Requests")
+    st.markdown("""
+    # 📊 Urban Service Intelligence
+    """)
+    
+    st.caption("""
+    San Francisco 311 Analytics • BigQuery + Streamlit
+    """)
 
     menu = st.radio(
         "Menu",
