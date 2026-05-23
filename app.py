@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from google.cloud import bigquery
 import plotly.express as px
 import plotly.graph_objects as go
 from wordcloud import WordCloud
@@ -95,31 +94,15 @@ p, label {
 """, unsafe_allow_html=True)
 
 # =========================================================
-# LOAD DATA BIGQUERY
+# LOAD DATA
 # =========================================================
 @st.cache_data
 def load_data():
 
-    client = bigquery.Client()
-
-    query = """
-    SELECT
-        unique_key,
-        created_date,
-        closed_date,
-        status,
-        category,
-        complaint_type,
-        descriptor,
-        neighborhood,
-        source,
-        latitude,
-        longitude
-    FROM `bigquery-public-data.san_francisco_311.311_service_requests`
-    LIMIT 20000
-    """
-
-    df = client.query(query).to_dataframe()
+    # =====================================================
+    # PAKAI CSV EXPORT DARI COLAB
+    # =====================================================
+    df = pd.read_csv("san_francisco_311_clean.csv")
 
     return df
 
@@ -185,12 +168,13 @@ if menu == "Overview":
         <h1>Dashboard Analisis Layanan Publik San Francisco 311</h1>
         <p>
         Analisis data berbasis cloud menggunakan Google BigQuery,
-        Google Colab, dan Streamlit Dashboard.
+        Google Colab, GitHub, dan Streamlit Cloud.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
     total_reports = len(df)
+
     total_category = df['category'].nunique()
 
     avg_resolution = round(
@@ -285,6 +269,20 @@ elif menu == "EDA & Visualisasi":
         .reset_index(name='Jumlah')
     )
 
+    month_order = [
+        'January','February','March','April',
+        'May','June','July','August',
+        'September','October','November','December'
+    ]
+
+    monthly['month_name'] = pd.Categorical(
+        monthly['month_name'],
+        categories=month_order,
+        ordered=True
+    )
+
+    monthly = monthly.sort_values('month_name')
+
     fig = px.line(
         monthly,
         x='month_name',
@@ -355,10 +353,12 @@ elif menu == "Heatmap":
 
     pivot = pivot[top_cat]
 
+    pivot = pivot.fillna(0).astype(int)
+
     fig, ax = plt.subplots(figsize=(12, 6))
 
     sns.heatmap(
-        pivot.astype(int),
+        pivot,
         annot=True,
         fmt='d',
         cmap='YlOrRd',
@@ -371,7 +371,7 @@ elif menu == "Heatmap":
     st.pyplot(fig)
 
 # =========================================================
-# RESOLUTION ANALYSIS
+# ANALISIS WAKTU PENYELESAIAN
 # =========================================================
 elif menu == "Analisis Waktu Penyelesaian":
 
