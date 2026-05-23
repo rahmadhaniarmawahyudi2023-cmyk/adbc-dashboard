@@ -487,9 +487,22 @@ if menu == "Overview":
 # =========================================================
 elif menu == "EDA & Visualisasi":
 
-    st.title("Exploratory Data Analysis")
+    st.title("EDA & Visualisasi Data")
 
-    st.subheader("Distribusi Laporan per Bulan")
+    st.markdown("""
+    <div class="info-box">
+        <p>
+        Exploratory Data Analysis dilakukan untuk melihat pola laporan,
+        tren waktu, serta distribusi kategori keluhan masyarakat.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # =====================================================
+    # LINE CHART
+    # =====================================================
+
+    st.subheader("Tren Jumlah Laporan per Bulan")
 
     monthly = (
         df.groupby('month_name')
@@ -497,36 +510,74 @@ elif menu == "EDA & Visualisasi":
         .reset_index(name='Jumlah')
     )
 
-    month_order = [
-        'January','February','March','April',
-        'May','June','July','August',
-        'September','October','November','December'
+    urutan_bulan = [
+        'January', 'February', 'March',
+        'April', 'May', 'June',
+        'July', 'August', 'September',
+        'October', 'November', 'December'
     ]
 
     monthly['month_name'] = pd.Categorical(
         monthly['month_name'],
-        categories=month_order,
+        categories=urutan_bulan,
         ordered=True
     )
 
     monthly = monthly.sort_values('month_name')
 
-    fig = px.line(
-        monthly,
-        x='month_name',
-        y='Jumlah',
-        markers=True
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(
+            x=monthly['month_name'],
+            y=monthly['Jumlah'],
+            mode='lines+markers',
+            line=dict(
+                color='#60a5fa',
+                width=4,
+                shape='spline'
+            ),
+            marker=dict(
+                size=10,
+                color='#38bdf8',
+                line=dict(
+                    color='white',
+                    width=2
+                )
+            ),
+            fill='tozeroy',
+            fillcolor='rgba(56,189,248,0.12)',
+            hovertemplate=
+                '<b>%{x}</b><br>' +
+                'Jumlah: %{y:,}<extra></extra>'
+        )
     )
 
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font_color='white'
+        font_color='white',
+        height=500,
+        margin=dict(l=20, r=20, t=40, b=20),
+
+        xaxis=dict(
+            title='Bulan',
+            showgrid=False
+        ),
+
+        yaxis=dict(
+            title='Jumlah Laporan',
+            gridcolor='rgba(255,255,255,0.08)'
+        )
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
-    st.subheader("Distribusi Kategori")
+    # =====================================================
+    # BAR CHART
+    # =====================================================
+
+    st.subheader("Top Kategori Keluhan")
 
     top8 = (
         df['category']
@@ -537,20 +588,103 @@ elif menu == "EDA & Visualisasi":
 
     top8.columns = ['Kategori', 'Jumlah']
 
-    fig2 = px.bar(
-        top8,
-        x='Kategori',
-        y='Jumlah',
-        color='Jumlah'
+    fig2 = go.Figure()
+
+    fig2.add_trace(
+        go.Bar(
+            x=top8['Kategori'],
+            y=top8['Jumlah'],
+
+            marker=dict(
+                color=top8['Jumlah'],
+                colorscale='Blues',
+                line=dict(
+                    color='rgba(255,255,255,0.2)',
+                    width=1
+                )
+            ),
+
+            text=top8['Jumlah'],
+            textposition='outside',
+
+            hovertemplate=
+                '<b>%{x}</b><br>' +
+                'Jumlah: %{y:,}<extra></extra>'
+        )
     )
 
     fig2.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
-        font_color='white'
+        font_color='white',
+        height=520,
+        margin=dict(l=20, r=20, t=40, b=20),
+
+        xaxis=dict(
+            title='Kategori',
+            tickangle=-20,
+            showgrid=False
+        ),
+
+        yaxis=dict(
+            title='Jumlah Laporan',
+            gridcolor='rgba(255,255,255,0.08)'
+        )
     )
 
     st.plotly_chart(fig2, use_container_width=True)
+
+    # =====================================================
+    # AREA CHART TAMBAHAN
+    # =====================================================
+
+    st.subheader("Distribusi Status Laporan")
+
+    status_month = (
+        df.groupby(['month_name', 'status'])
+        .size()
+        .reset_index(name='Jumlah')
+    )
+
+    status_month['month_name'] = pd.Categorical(
+        status_month['month_name'],
+        categories=urutan_bulan,
+        ordered=True
+    )
+
+    status_month = status_month.sort_values('month_name')
+
+    fig3 = px.area(
+        status_month,
+        x='month_name',
+        y='Jumlah',
+        color='status',
+
+        color_discrete_sequence=[
+            '#38bdf8',
+            '#4ade80',
+            '#facc15',
+            '#f87171'
+        ]
+    )
+
+    fig3.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font_color='white',
+        height=500,
+
+        xaxis=dict(
+            title='Bulan'
+        ),
+
+        yaxis=dict(
+            title='Jumlah',
+            gridcolor='rgba(255,255,255,0.08)'
+        )
+    )
+
+    st.plotly_chart(fig3, use_container_width=True)
 
 # =========================================================
 # HEATMAP
