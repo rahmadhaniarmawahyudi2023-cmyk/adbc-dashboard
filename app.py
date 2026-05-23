@@ -426,8 +426,10 @@ elif menu == "WordCloud":
 
     st.title("WordCloud Deskripsi Keluhan")
 
+    text_column = 'descriptor' if 'descriptor' in df.columns else 'complaint_type'
+
     text = " ".join(
-        df['descriptor']
+        df[text_column]
         .dropna()
         .astype(str)
     )
@@ -468,8 +470,10 @@ elif menu == "Topic Modeling (LDA)":
     </div>
     """, unsafe_allow_html=True)
 
+    text_column = 'descriptor' if 'descriptor' in df.columns else 'complaint_type'
+
     text_series = (
-        df['descriptor']
+        df[text_column]
         .dropna()
         .astype(str)
     )
@@ -521,17 +525,21 @@ elif menu == "Eksplorasi Data":
 
     display_df = df.copy()
 
+    text_column = 'descriptor' if 'descriptor' in df.columns else 'complaint_type'
+
     if search:
 
-        mask = (
-            display_df['category']
-            .astype(str)
-            .str.contains(search, case=False, na=False)
-        ) | (
-            display_df['descriptor']
-            .astype(str)
-            .str.contains(search, case=False, na=False)
-        )
+    mask = (
+        display_df['category']
+        .astype(str)
+        .str.contains(search, case=False, na=False)
+    ) | (
+        display_df[text_column]
+        .astype(str)
+        .str.contains(search, case=False, na=False)
+    )
+
+    display_df = display_df[mask]
 
         display_df = display_df[mask]
 
