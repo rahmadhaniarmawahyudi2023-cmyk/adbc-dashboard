@@ -745,23 +745,23 @@ elif menu == "Heatmap":
 
     heatmap = sns.heatmap(
         pivot.astype(int),
-
+    
         annot=True,
         fmt='d',
-
+    
         cmap='rocket_r',
-
+    
         linewidths=1,
-        linecolor='rgba(255,255,255,0.05)',
-
+        linecolor=(1,1,1,0.08),
+    
         cbar=True,
-
+    
         annot_kws={
             "size": 10,
             "color": "white",
             "weight": "bold"
         },
-
+    
         ax=ax
     )
 
