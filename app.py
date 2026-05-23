@@ -541,8 +541,6 @@ if search:
 
     display_df = display_df[mask]
 
-        display_df = display_df[mask]
-
     st.caption(
         f"{len(display_df):,} data ditampilkan"
     )
