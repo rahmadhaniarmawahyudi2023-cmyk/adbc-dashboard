@@ -517,13 +517,13 @@ elif menu == "Topic Modeling (LDA)":
 # =========================================================
 elif menu == "Eksplorasi Data":
 
-    st.title("Eksplorasi Dataset")
+st.title("Eksplorasi Dataset")
 
-    search = st.text_input(
-        "Cari kategori atau descriptor"
-    )
+search = st.text_input(
+    "Cari kategori atau descriptor"
+)
 
-    display_df = df.copy()
+display_df = df.copy()
 
 text_column = 'descriptor' if 'descriptor' in df.columns else 'complaint_type'
 
@@ -541,21 +541,21 @@ if search:
 
     display_df = display_df[mask]
 
-    st.caption(
-        f"{len(display_df):,} data ditampilkan"
-    )
+st.caption(
+    f"{len(display_df):,} data ditampilkan"
+)
 
-    st.dataframe(
-        display_df[
-            [
-                'created_date',
-                'closed_date',
-                'status',
-                'category',
-                'complaint_type',
-                'descriptor',
-                'resolution_days'
-            ]
-        ],
-        use_container_width=True
-    )
+st.dataframe(
+    display_df[
+        [
+            'created_date',
+            'closed_date',
+            'status',
+            'category',
+            'complaint_type',
+            'descriptor',
+            'resolution_days'
+        ]
+    ],
+    use_container_width=True
+)
