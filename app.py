@@ -693,6 +693,20 @@ elif menu == "Heatmap":
 
     st.title("Heatmap Hari vs Kategori")
 
+    st.markdown("""
+    <div class="info-box">
+        <p>
+        Heatmap digunakan untuk melihat pola hubungan antara hari laporan masuk
+        dengan kategori keluhan yang paling sering muncul.
+        Semakin terang warna, semakin banyak jumlah laporan.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # =====================================================
+    # PREPARE DATA
+    # =====================================================
+
     pivot = (
         df.groupby(['day_of_week', 'category'])
         .size()
@@ -711,27 +725,126 @@ elif menu == "Heatmap":
 
     pivot = pivot.reindex(day_order)
 
-    top_cat = df['category'].value_counts().head(6).index
+    top_cat = (
+        df['category']
+        .value_counts()
+        .head(6)
+        .index
+    )
 
     pivot = pivot[top_cat]
 
-    pivot = pivot.fillna(0).astype(int)
+    # =====================================================
+    # HEATMAP STYLE
+    # =====================================================
 
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, ax = plt.subplots(figsize=(14, 6))
 
-    sns.heatmap(
-        pivot,
+    fig.patch.set_facecolor('#0b1120')
+    ax.set_facecolor('#0b1120')
+
+    heatmap = sns.heatmap(
+        pivot.astype(int),
+
         annot=True,
         fmt='d',
-        cmap='YlOrRd',
-        linewidths=0.5,
+
+        cmap='rocket_r',
+
+        linewidths=1,
+        linecolor='rgba(255,255,255,0.05)',
+
+        cbar=True,
+
+        annot_kws={
+            "size": 10,
+            "color": "white",
+            "weight": "bold"
+        },
+
         ax=ax
     )
 
-    ax.set_title("Jumlah Laporan per Hari dan Kategori")
+    # =====================================================
+    # TITLE & LABEL
+    # =====================================================
+
+    ax.set_title(
+        "Jumlah Laporan per Hari dan Kategori",
+        fontsize=18,
+        color='white',
+        pad=20,
+        weight='bold'
+    )
+
+    ax.set_xlabel(
+        "Kategori Keluhan",
+        color='white',
+        fontsize=12
+    )
+
+    ax.set_ylabel(
+        "Hari",
+        color='white',
+        fontsize=12
+    )
+
+    ax.tick_params(
+        axis='x',
+        colors='white',
+        rotation=25
+    )
+
+    ax.tick_params(
+        axis='y',
+        colors='white',
+        rotation=0
+    )
+
+    # =====================================================
+    # COLORBAR STYLE
+    # =====================================================
+
+    cbar = heatmap.collections[0].colorbar
+
+    cbar.ax.yaxis.set_tick_params(color='white')
+
+    plt.setp(
+        plt.getp(cbar.ax.axes, 'yticklabels'),
+        color='white'
+    )
+
+    # =====================================================
+    # GLOW EFFECT
+    # =====================================================
+
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    plt.tight_layout()
 
     st.pyplot(fig)
 
+    # =====================================================
+    # INSIGHT OTOMATIS
+    # =====================================================
+
+    st.subheader("Insight Heatmap")
+
+    max_value = pivot.max().max()
+
+    lokasi = np.where(pivot == max_value)
+
+    hari_tertinggi = pivot.index[lokasi[0][0]]
+    kategori_tertinggi = pivot.columns[lokasi[1][0]]
+
+    st.success(
+        f"""
+        Hari dengan laporan tertinggi adalah **{hari_tertinggi}**
+        pada kategori **{kategori_tertinggi}**
+        dengan total **{max_value:,} laporan**.
+        """
+    )
 # =========================================================
 # ANALISIS WAKTU PENYELESAIAN
 # =========================================================
