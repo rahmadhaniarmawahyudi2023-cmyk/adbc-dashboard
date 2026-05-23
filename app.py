@@ -525,9 +525,9 @@ elif menu == "Eksplorasi Data":
 
     display_df = df.copy()
 
-    text_column = 'descriptor' if 'descriptor' in df.columns else 'complaint_type'
+text_column = 'descriptor' if 'descriptor' in df.columns else 'complaint_type'
 
-    if search:
+if search:
 
     mask = (
         display_df['category']
